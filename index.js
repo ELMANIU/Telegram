@@ -1,4 +1,4 @@
-const BOT_TOKEN = "8993813132:AAFZq96jeMsIZp--VEsxYhuo6e9bdOkwu0I";
+const BOT_TOKEN = "";
 
 const DB_URL = "https://raw.githubusercontent.com/TU_USUARIO/TU_REPOSITORIO/main/peliculas.json";
 
