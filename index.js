@@ -18,11 +18,16 @@ export default {
       const data = await telegram.json();
 
       if (!data.ok) {
-        return new Response(
-          "No se pudo obtener archivo de Telegram",
-          {status:500}
-        );
-      }
+ return new Response(
+ JSON.stringify(data),
+ {
+  status:500,
+  headers:{
+   "content-type":"application/json"
+  }
+ }
+ );
+}
 
       const filePath = data.result.file_path;
 
