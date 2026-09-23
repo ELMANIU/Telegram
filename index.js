@@ -1,45 +1,43 @@
 export default {
-  async fetch(request, env) {
+  async fetch(request) {
 
     const url = new URL(request.url);
 
-    if (url.pathname.startsWith("/video/")) {
+    const origin = "http://200.234.234.244";
 
-      const fileId = url.pathname.split("/video/")[1];
+    const target = origin + url.pathname;
 
-      if (!fileId) {
-        return new Response("Falta file_id", {status:400});
-      }
+    const response = await fetch(target);
 
-      const telegram = await fetch(
-        `https://api.telegram.org/bot${env.BOT_TOKEN}/getFile?file_id=${fileId}`
+    const headers = new Headers(response.headers);
+
+    // Playlist HLS
+    if (url.pathname.endsWith(".m3u8")) {
+      headers.set(
+        "Cache-Control",
+        "public, max-age=5"
       );
-
-      const data = await telegram.json();
-
-      if (!data.ok) {
- return new Response(
- JSON.stringify(data),
- {
-  status:500,
-  headers:{
-   "content-type":"application/json"
-  }
- }
- );
-}
-
-      const filePath = data.result.file_path;
-
-      const videoUrl =
-      `https://api.telegram.org/file/bot${env.BOT_TOKEN}/${filePath}`;
-
-      return Response.redirect(videoUrl,302);
     }
 
+    // Segmentos TS
+    if (url.pathname.endsWith(".ts")) {
+      headers.set(
+        "Cache-Control",
+        "public, max-age=60"
+      );
+    }
+
+    headers.set(
+      "Access-Control-Allow-Origin",
+      "*"
+    );
 
     return new Response(
-      "Worker Telegram Video funcionando ✅"
+      response.body,
+      {
+        status: response.status,
+        headers
+      }
     );
   }
-}
+};
